@@ -1,0 +1,8 @@
+Java effects
+import java.io.*;
+import java.net.*;
+import scanner,
+
+Class:
+Client
+BeaconServer
