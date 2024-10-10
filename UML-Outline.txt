@@ -1,0 +1,17 @@
+Define Actors:
+Identify the different actors (users or external systems) that will interact with your project.
+User 1 and User 2 and Server
+List Use Cases:
+Based on the actors you identified, outline the key functionalities of the system.
+User 1 and user 2 would have the same use case
+Verification 
+Encrypted Message 
+Decrypted Message
+Routing call
+Server Use Cases
+Authentication 
+Transport Message
+Synchronize Messages
+Each use case should describe an interaction between an actor and the system.
+User 1 and 2 would verify and then authenticate with the server
+User 1 or 2 composes a message, the message is encrypted on the user’s client and sent to the server. Server transports the encrypted message to the other user, holding the message until the next login if the other user is not logged in. The other user retrieves the message from the server and decrypts the message on their client.
