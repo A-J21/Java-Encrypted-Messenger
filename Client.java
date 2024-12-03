@@ -39,7 +39,7 @@ public class Client {
                         String decryptedMessage = decryptMessage(incomingMessage, userId);
                         System.out.println("Server: " + decryptedMessage);
                     }
-                } catch (IOException | NoSuchAlgorithmException e) {
+                } catch (IOException e) {
                     System.err.println("Error receiving message: " + e.getMessage());
                 }
             }).start();
