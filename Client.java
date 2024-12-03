@@ -45,7 +45,7 @@ public class Client {
             }).start();
 
             // Sending messages
-            while (true) {
+            while (scanner.hasNextLine()) {
                 System.out.print("You: ");
                 String content = scanner.nextLine();
 
@@ -87,7 +87,7 @@ public class Client {
         return result;
     }
 
-    // Convert byte array to hex string
+    // Convert byte array to hex string`
     private static String bytesToHex(byte[] bytes) {
         StringBuilder sb = new StringBuilder();
         for (byte b : bytes) {
