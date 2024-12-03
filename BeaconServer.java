@@ -1,3 +1,4 @@
+
 import java.io.*;
 import java.net.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -26,7 +27,7 @@ public class BeaconServer {
     }
 
     // Broadcast a message to all clients except the sender
-    public static void broadcast(String message, ClientHandler sender) {
+    public static void broadcast(Message message, ClientHandler sender) {
         for (ClientHandler client : clients) {
             if (client != sender) {
                 client.sendMessage(message);
@@ -66,4 +67,49 @@ public class BeaconServer {
                     String inputLine;
                     // Continue receiving messages from the client
                     while ((inputLine = in.readLine()) != null) {
-                        System.out
+                        System.out.println("User Accepted "); 
+                    }
+                }
+            }
+            catch(Exception e){
+                System.out.println("not verified user");
+            }
+        }
+
+        private void authenticate(){
+            try {
+                out.println("Enter your username: ");
+                userId = in.readLine();
+
+                if(userId != null && !userId.isEmpty()){
+                    authenticated = true;
+                    System.out.println("Client is authenticated :" + userId);
+                }
+                else {
+                    System.out.println("Unauthorized user");
+                    disconnect();
+                }
+            }
+            catch(IOException e){
+                System.err.println("Error authorizing user.");
+                disconnect();
+            }
+        }
+        public void sendMessage(Message message) {
+            System.out.println(message.getContent());
+        }
+
+        
+        private void disconnect(){
+            try {
+                if(clientSocket != null) clientSocket.close();
+                clients.remove(this);
+                System.out.println("Client has disconnected");
+            }
+            catch(IOException e){
+                e.printStackTrace();
+            }
+        }
+    }
+}
+

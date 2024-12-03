@@ -1,17 +1,17 @@
-package Java-Project;
+
 
 import java.util.Date;
 
 public class Message {
-    private String content;
-    private Date timestamp;
-    private String senderId;
-    private String receiverId;
+    private String content;  // Encrypted content
+    private Date timestamp;  // Timestamp of the message
+    private String senderId; // Sender's User ID
+    private String receiverId; // Receiver's User ID
 
     // Constructor
     public Message(String content, String senderId, String receiverId) {
         this.content = content;
-        this.timestamp = new Date(); 
+        this.timestamp = new Date();
         this.senderId = senderId;
         this.receiverId = receiverId;
     }
