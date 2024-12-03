@@ -65,12 +65,17 @@ public class Client {
     }
 
     // Decrypt a message
-    private static String decryptMessage(String encryptedHex, String userId) throws NoSuchAlgorithmException {
-        byte[] key = generateKey(userId);
-        byte[] encryptedBytes = hexToBytes(encryptedHex);
-        byte[] decryptedBytes = xorEncrypt(encryptedBytes, key);
-        return new String(decryptedBytes, StandardCharsets.UTF_8);
-    }
+  private static String decryptMessage(String encryptedHex, String userId) throws NoSuchAlgorithmException{
+   try {
+    byte[] cipherKey = generateCipherkey(userId); // generate a cipher key
+   byte[] encryptedBytes = hexToBytes(encryptedHex);// convert hex string to byte array
+   byte[] decryptedBytes = xorEncrypt( encryptedBytes, cipherKey); // XOR decryption
+   return new String( decryptedBytes, StandardCharsets.UTF_8 ); // Convert to string
+   } catch (IllegalArgumentException e){
+        System.err.println("Error decrypting message: " + e.getMessage());
+        return "[Invalid encrypted message]";
+   }
+}
 
     // Generate a key using SHA-256
     private static byte[] generateKey(String userId) throws NoSuchAlgorithmException {
