@@ -41,7 +41,7 @@ public class Client {
                         String decryptedMessage=decryptMessage(incomingMessage, userId);
                         System.out.println("Server:"+ decryptMessage);
                     }
-                } catch (IOException|NoSuchAlgorithmException e) {
+                } catch (IOException e) {
                     System.err.println("Error recieving message from server: " + e.getMessage());
                 }
             }).start();
@@ -75,11 +75,15 @@ private static String encryptMessage(String message, String userId) throws NoSuc
 }
 
 private static String decryptMessage(String encryptedHex, String userId) throws NoSuchAlgorithmException{
-   byte[] cipherKey = generateCipherkey(userId); // generate a cipher key
+   try {
+    byte[] cipherKey = generateCipherkey(userId); // generate a cipher key
    byte[] encryptedBytes = hexToBytes(encryptedHex);// convert hex string to byte array
    byte[] decryptedBytes = xorEncrypt( encryptedBytes, cipherKey); // XOR decryption
    return new String( decryptedBytes, StandardCharsets.UTF_8 ); // Convert to string
-
+   } catch (IllegalArgumentException e){
+        System.err.println("Error decrypting message: " + e.getMessage());
+        return "[Invalid encrypted message]";
+   }
 }
 
 // Generate a cipher key based on the user's ID
@@ -108,10 +112,18 @@ private static String bytesTohex(byte[] bytes){
 }
 
 private static byte[] hexTobytes(String hex){
-    int len = hex.length();
-    byte[] bytes = new byte[len/ 2];
-    for(int i = 0; i < len; i+= 2){
-        bytes[i/2] =(byte) (Character.digit(hex.charAt(i), 16)<<4)
+    if (hex == null || hex.length()% 2 != 0){
+    throw new IllegalArgumentException("Invalid hexadecimal input. Length must be even and non-null.");
+}
+int len = hex.length();
+byte[] bytes = new byte [len /2];
+for (int i=0; i<len; i += 2){
+    int firstDigit = Character.digit(hex.charAt(i), 16);
+    int secondDigit = Character.digit(hex.charAt(i + 1), 16);
+    if (firstDigit ==-1 || secondDigit == -1){
+        throw new IllegalArgumentException("Invalid hexadecimal character detected."); 
+    }
+    bytes[i / 2] = (byte) ((firstDigit << 4) + secondDigit);
     }
     return bytes;
 }
