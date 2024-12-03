@@ -39,7 +39,7 @@ public class Client {
                         String decryptedMessage = decryptMessage(incomingMessage, userId);
                         System.out.println("Server: " + decryptedMessage);
                     }
-                } catch (IOException e) {
+                } catch (IOException | NoSuchAlgorithmException e) {
                     System.err.println("Error receiving message: " + e.getMessage());
                 }
             }).start();
@@ -67,8 +67,8 @@ public class Client {
     // Decrypt a message
   private static String decryptMessage(String encryptedHex, String userId) throws NoSuchAlgorithmException{
    try {
-    byte[] cipherKey = generateCipherkey(userId); // generate a cipher key
-   byte[] encryptedBytes = hexToBytes(encryptedHex);// convert hex string to byte array
+    byte[] cipherKey = generateKey(userId); // generate a cipher key
+   byte[] encryptedBytes = hexTobytes(encryptedHex);// convert hex string to byte array
    byte[] decryptedBytes = xorEncrypt( encryptedBytes, cipherKey); // XOR decryption
    return new String( decryptedBytes, StandardCharsets.UTF_8 ); // Convert to string
    } catch (IllegalArgumentException e){
@@ -102,19 +102,20 @@ public class Client {
     }
 
     // Convert hex string to byte array
- private static byte[] hexTobytes(String hex){
-    if (hex == null || hex.length()% 2 != 0){
-    throw new IllegalArgumentException("Invalid hexadecimal input. Length must be even and non-null.");
-}
-int len = hex.length();
-byte[] bytes = new byte [len /2];
-for (int i=0; i<len; i += 2){
-    int firstDigit = Character.digit(hex.charAt(i), 16);
-    int secondDigit = Character.digit(hex.charAt(i + 1), 16);
-    if (firstDigit ==-1 || secondDigit == -1){
-        throw new IllegalArgumentException("Invalid hexadecimal character detected."); 
+    private static byte[] hexTobytes(String hex){
+        if (hex == null || hex.length()% 2 != 0){
+        throw new IllegalArgumentException("Invalid hexadecimal input. Length must be even and non-null.");
+        }
+        int len = hex.length();
+        byte[] bytes = new byte [len /2];
+        for (int i=0; i<len; i += 2){
+        int firstDigit = Character.digit(hex.charAt(i), 16);
+        int secondDigit = Character.digit(hex.charAt(i + 1), 16);
+        if (firstDigit ==-1 || secondDigit == -1){
+            throw new IllegalArgumentException("Invalid hexadecimal character detected."); 
+            }
+        bytes[i / 2] = (byte) ((firstDigit << 4) + secondDigit);
+            }
+        return bytes;
     }
-    bytes[i / 2] = (byte) ((firstDigit << 4) + secondDigit);
-    }
-    return bytes;
 }
