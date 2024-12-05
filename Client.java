@@ -20,7 +20,7 @@ public class Client {
             System.out.print("Enter the server port: ");
             int serverPort = scanner.nextInt();
             scanner.nextLine(); // Consume newline
-            
+
             // Connect to the server
             Socket socket = new Socket(serverAddress, serverPort);
             System.out.println("Connected to the server.");
@@ -51,7 +51,7 @@ public class Client {
                         } else {
                             System.out.println("\n[Invalid message format]");
                         }
-                        System.out.print("You: "); 
+                        
                     }
                 } catch (IOException | NoSuchAlgorithmException e) {
                     System.err.println("Error receiving message: " + e.getMessage());
