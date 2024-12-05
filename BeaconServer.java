@@ -56,26 +56,29 @@ public class BeaconServer {
             }
         }
 
-        // Run method to handle client communication
         @Override
         public void run() {
             try {
                 // Authenticate the client
                 authenticate();
-
+        
                 if (authenticated) {
+                    System.out.println("User Accepted: " + userId);
+        
                     String inputLine;
-                    // Continue receiving messages from the client
                     while ((inputLine = in.readLine()) != null) {
-                        System.out.println("User Accepted "); 
+                        System.out.println("Received message from " + userId + ": " + inputLine);
+        
+                        // Create a Message object and broadcast it
+                        Message message = new Message(inputLine, userId, userId);  // Adjust the receiver as needed
+                        BeaconServer.broadcast(message, this);
                     }
                 }
-            }
-            catch(Exception e){
-                System.out.println("not verified user");
+            } catch (Exception e) {
+                System.out.println("Not verified user");
             }
         }
-
+        
         private void authenticate(){
             try {
                 out.println("Enter your username: ");
@@ -96,7 +99,7 @@ public class BeaconServer {
             }
         }
         public void sendMessage(Message message) {
-            System.out.println(message.getContent());
+            out.println(message.getContent());
         }
 
         
