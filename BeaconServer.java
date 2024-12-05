@@ -69,8 +69,9 @@ public class BeaconServer {
                     while ((inputLine = in.readLine()) != null) {
                         System.out.println("Received message from " + userId + ": " + inputLine);
         
-                        // Create a Message object and broadcast it
-                        Message message = new Message(inputLine, userId, userId);  // Adjust the receiver as needed
+                        String formattedMessage = userId + ": " + inputLine;
+
+                        Message message = new Message(formattedMessage, userId, null);  
                         BeaconServer.broadcast(message, this);
                     }
                 }
@@ -78,7 +79,7 @@ public class BeaconServer {
                 System.out.println("Not verified user");
             }
         }
-        
+
         private void authenticate(){
             try {
                 out.println("Enter your username: ");

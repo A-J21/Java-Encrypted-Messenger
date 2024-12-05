@@ -20,7 +20,7 @@ public class Client {
             System.out.print("Enter the server port: ");
             int serverPort = scanner.nextInt();
             scanner.nextLine(); // Consume newline
-
+            
             // Connect to the server
             Socket socket = new Socket(serverAddress, serverPort);
             System.out.println("Connected to the server.");
@@ -31,13 +31,27 @@ public class Client {
             // Authentication
             out.println(userId);
 
+            
             // Thread for receiving messages
             new Thread(() -> {
                 try {
                     String incomingMessage;
                     while ((incomingMessage = in.readLine()) != null) {
-                        String decryptedMessage = decryptMessage(incomingMessage, userId);
-                        System.out.println("Server: " + decryptedMessage);
+                        // Split the message into sender name and encrypted message
+                        String[] parts = incomingMessage.split(": ", 2);
+                        if (parts.length == 2) {
+                            String senderName = parts[0];
+                            String encryptedMessage = parts[1];
+
+                          
+                            String decryptedMessage = decryptMessage(encryptedMessage, userId);
+
+                            
+                            System.out.println("\n" + senderName + ": " + decryptedMessage);
+                        } else {
+                            System.out.println("\n[Invalid message format]");
+                        }
+                        System.out.print("You: "); 
                     }
                 } catch (IOException | NoSuchAlgorithmException e) {
                     System.err.println("Error receiving message: " + e.getMessage());
