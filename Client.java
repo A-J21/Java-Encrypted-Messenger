@@ -93,7 +93,7 @@ public class Client {
 }
 
     // Generate a key using SHA-256
-    private static byte[] generateKey(String userId) throws NoSuchAlgorithmException {
+    private static byte[] generateKey() throws NoSuchAlgorithmException {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         return digest.digest(MASTER_KEY.getBytes(StandardCharsets.UTF_8));
     }
