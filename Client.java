@@ -7,6 +7,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Scanner;
 
 public class Client {
+    private static final String MASTER_KEY =" SHARED_keybetweenusers456";
     private static String userId;
 
     public static void main(String[] args) {
@@ -46,8 +47,8 @@ public class Client {
                           
                             String decryptedMessage = decryptMessage(encryptedMessage, userId);
 
+                            System.out.print("\n" + senderName + ": " + decryptedMessage + "\nYou: ");
                             
-                            System.out.println("\n" + senderName + ": " + decryptedMessage);
                         } else {
                             System.out.println("\n[Invalid message format]");
                         }
@@ -73,7 +74,7 @@ public class Client {
 
     // Encrypt a message using user's ID
     private static String encryptMessage(String message, String userId) throws NoSuchAlgorithmException {
-        byte[] key = generateKey(userId);
+        byte[] key = generateKey();
         byte[] encryptedBytes = xorEncrypt(message.getBytes(StandardCharsets.UTF_8), key);
         return bytesToHex(encryptedBytes);
     }
@@ -81,7 +82,7 @@ public class Client {
     // Decrypt a message
   private static String decryptMessage(String encryptedHex, String userId) throws NoSuchAlgorithmException{
    try {
-    byte[] cipherKey = generateKey(userId); // generate a cipher key
+    byte[] cipherKey = generateKey(); // generate a cipher key
    byte[] encryptedBytes = hexTobytes(encryptedHex);// convert hex string to byte array
    byte[] decryptedBytes = xorEncrypt( encryptedBytes, cipherKey); // XOR decryption
    return new String( decryptedBytes, StandardCharsets.UTF_8 ); // Convert to string
@@ -94,7 +95,7 @@ public class Client {
     // Generate a key using SHA-256
     private static byte[] generateKey(String userId) throws NoSuchAlgorithmException {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
-        return digest.digest(userId.getBytes(StandardCharsets.UTF_8));
+        return digest.digest(MASTER_KEY.getBytes(StandardCharsets.UTF_8));
     }
 
     // XOR encryption/decryption
