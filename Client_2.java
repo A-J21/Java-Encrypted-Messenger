@@ -162,21 +162,22 @@ public class Client_2 {
             String incomingMessage;
     
             while ((incomingMessage = in.readLine()) != null) {
-               
-                if (incomingMessage.contains("has disconnected")) {
-                    
+                
+                final String messageToDisplay = incomingMessage;
+    
+                if (messageToDisplay.contains("has disconnected")) {
                     SwingUtilities.invokeLater(() -> {
-                        chatArea.append(incomingMessage + "\n");
+                        chatArea.append(messageToDisplay + "\n");
                     });
                 } else {
-                    String[] parts = incomingMessage.split(": ", 2);
+                    String[] parts = messageToDisplay.split(": ", 2);
                     if (parts.length == 2) {
                         String senderName = parts[0];
                         String encryptedMessage = parts[1];
     
                         String decryptedMessage = decryptMessage(encryptedMessage, userId);
     
-                        
+                        // Update the chat area with the received message
                         SwingUtilities.invokeLater(() -> {
                             chatArea.append(senderName + ": " + decryptedMessage + "\n");
                         });
@@ -188,10 +189,7 @@ public class Client_2 {
         }
     }
     
-        } catch (IOException | NoSuchAlgorithmException e) {
-            JOptionPane.showMessageDialog(frame, "Error receiving message: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
+    
 
     // Encrypt a message using user's ID
     private static String encryptMessage(String message, String userId) throws NoSuchAlgorithmException {

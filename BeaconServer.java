@@ -90,23 +90,21 @@ public class BeaconServer {
         }
 
 
-        private void authenticate(){
+        private void authenticate() {
             try {
-
-                if(userId != null && !userId.isEmpty()){
+                if (userId != null && !userId.isEmpty()) {
                     authenticated = true;
-                    System.out.println("Client is authenticated :" + userId);
-                }
-                else {
+                    System.out.println("Client is authenticated: " + userId);
+                } else {
                     System.out.println("Unauthorized user");
                     disconnect();
                 }
-            }
-            catch(IOException e){
-                System.err.println("Error authorizing user.");
+            } catch (Exception e) {
+                System.err.println("Error during authentication: " + e.getMessage());
                 disconnect();
             }
         }
+        
         public void sendMessage(Message message) {
             out.println(message.getContent());
         }
