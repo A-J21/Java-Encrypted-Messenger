@@ -122,17 +122,20 @@ public class Client {
     private static void handleDisconnect() {
         try {
             if (socket != null && !socket.isClosed()) {
-               
                 out.println("[DISCONNECT] " + userId);
                 socket.close();
             }
     
             frame.remove(chatPanel);
             createLoginUI();
+
+            frame.revalidate();
+            frame.repaint();
         } catch (IOException e) {
             JOptionPane.showMessageDialog(frame, "Error disconnecting: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+    
     
 
     private static void handleSendMessage() {
@@ -179,8 +182,12 @@ public class Client {
                     }
                 }
             }
-        } catch (IOException | NoSuchAlgorithmException e) {
-            JOptionPane.showMessageDialog(frame, "Error receiving message: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (IOException e) {
+            if (!socket.isClosed()) { // Ignore exceptions if socket is intentionally closed
+                JOptionPane.showMessageDialog(frame, "Error receiving message: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (NoSuchAlgorithmException e) {
+            JOptionPane.showMessageDialog(frame, "Decryption error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
     
