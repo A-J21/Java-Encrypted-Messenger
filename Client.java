@@ -8,7 +8,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class Client {
-    private static final String MASTER_KEY = "SHARED_keybetweenusers456";
     private static String userId;
     private static Socket socket;
     private static PrintWriter out;
@@ -140,10 +139,11 @@ public class Client {
         String message = messageField.getText();
         if (!message.isEmpty()) {
             try {
-                String encryptedMessage = encryptMessage(message, userId);
+                // Use the EncryptedMessage class to encrypt the message
+                String encryptedMessage = EncryptedMessage.encryptMessage(message, userId);
                 out.println(encryptedMessage);
                 messageField.setText("");
-
+    
                 SwingUtilities.invokeLater(() -> {
                     chatArea.append(userId + ": " + message + "\n");
                 });
@@ -152,13 +152,12 @@ public class Client {
             }
         }
     }
-
+    
     private static void receiveMessages() {
         try {
             String incomingMessage;
     
             while ((incomingMessage = in.readLine()) != null) {
-                
                 final String messageToDisplay = incomingMessage;
     
                 if (messageToDisplay.contains("has disconnected")) {
@@ -171,9 +170,9 @@ public class Client {
                         String senderName = parts[0];
                         String encryptedMessage = parts[1];
     
-                        String decryptedMessage = decryptMessage(encryptedMessage, userId);
+                        // Use the EncryptedMessage class to decrypt the message
+                        String decryptedMessage = EncryptedMessage.decryptMessage(encryptedMessage, userId);
     
-                        // Update the chat area with the received message
                         SwingUtilities.invokeLater(() -> {
                             chatArea.append(senderName + ": " + decryptedMessage + "\n");
                         });
@@ -184,6 +183,7 @@ public class Client {
             JOptionPane.showMessageDialog(frame, "Error receiving message: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+    
     
     
 }
