@@ -122,6 +122,10 @@ public class Client_2 {
                 String encryptedMessage = encryptMessage(message, userId);
                 out.println(encryptedMessage);
                 messageField.setText("");
+
+                SwingUtilities.invokeLater(() -> {
+                    chatArea.append(userId + ": " + message + "\n");
+                });
             } catch (NoSuchAlgorithmException e) {
                 JOptionPane.showMessageDialog(frame, "Encryption error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
