@@ -92,6 +92,7 @@ public class BeaconServer {
 
         private void authenticate() {
             try {
+                userId = in.readLine();
                 if (userId != null && !userId.isEmpty()) {
                     authenticated = true;
                     System.out.println("Client is authenticated: " + userId);
