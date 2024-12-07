@@ -58,6 +58,15 @@ public class Client_2 {
     }
 
     private static void handleLogin() {
+        
+        if (socket != null && !socket.isClosed()) {
+            try {
+                socket.close();
+            } catch (IOException e) {
+                
+            }
+        }
+        
         userId = userIdField.getText();
         String serverAddress = serverAddressField.getText();
         int serverPort;
@@ -67,54 +76,77 @@ public class Client_2 {
             JOptionPane.showMessageDialog(frame, "Invalid port number.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-
+    
         // Connect to the server
         try {
             socket = new Socket(serverAddress, serverPort);
             out = new PrintWriter(socket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
-            // Send the User ID to the server
+    
+            
             out.println(userId);
-
-            // Switch to chat panel after successful login
+    
+            
             frame.remove(loginPanel);
             createChatUI();
-
-            // Start listening for incoming messages
+    
+        
             new Thread(Client_2::receiveMessages).start();
         } catch (IOException e) {
             JOptionPane.showMessageDialog(frame, "Error connecting to server: " + e.getMessage(), "Connection Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+    
 
     private static void createChatUI() {
         chatPanel = new JPanel();
         chatPanel.setLayout(new BorderLayout());
-
+    
+       
         chatArea = new JTextArea();
         chatArea.setEditable(false);
         chatArea.setLineWrap(true);
         JScrollPane scrollPane = new JScrollPane(chatArea);
         chatPanel.add(scrollPane, BorderLayout.CENTER);
-
-        JPanel bottomPanel = new JPanel();
-        bottomPanel.setLayout(new BorderLayout());
-
+    
+        
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JButton disconnectButton = new JButton("Disconnect");
+        disconnectButton.addActionListener(e -> handleDisconnect());
+        topPanel.add(disconnectButton);
+        chatPanel.add(topPanel, BorderLayout.NORTH);
+    
+        
+        JPanel bottomPanel = new JPanel(new BorderLayout());
         messageField = new JTextField();
         bottomPanel.add(messageField, BorderLayout.CENTER);
-
+    
         sendButton = new JButton("Send");
         sendButton.addActionListener(e -> handleSendMessage());
         bottomPanel.add(sendButton, BorderLayout.EAST);
-
+    
         chatPanel.add(bottomPanel, BorderLayout.SOUTH);
+    
         frame.add(chatPanel, BorderLayout.CENTER);
-
         frame.setSize(400, 500);
         frame.setVisible(true);
     }
-
+    
+    private static void handleDisconnect() {
+        try {
+            if (socket != null && !socket.isClosed()) {
+                out.println("[DISCONNECT] " + userId);
+                socket.close();
+            }
+            chatArea.append("[You have disconnected]\n");
+            // Optionally, go back to login UI
+            frame.remove(chatPanel);
+            createLoginUI();
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(frame, "Error disconnecting: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
     private static void handleSendMessage() {
         String message = messageField.getText();
         if (!message.isEmpty()) {
