@@ -61,17 +61,26 @@ public class BeaconServer {
             try {
                 // Authenticate the client
                 authenticate();
-        
+
                 if (authenticated) {
                     System.out.println("User Accepted: " + userId);
-        
+
                     String inputLine;
                     while ((inputLine = in.readLine()) != null) {
-                        System.out.println("Received message from " + userId + ": " + inputLine);
-        
-                        String formattedMessage = userId + ": " + inputLine;
+                       
+                        if (inputLine.startsWith("[DISCONNECT]")) {
+                            System.out.println(userId + " has disconnected");
+                            
+                            Message disconnectMessage = new Message(userId + " has disconnected", userId, null);
+                            BeaconServer.broadcast(disconnectMessage, this);
+                            disconnect();
+                            break;
+                        }
 
-                        Message message = new Message(formattedMessage, userId, null);  
+                        System.out.println("Received message from " + userId + ": " + inputLine);
+
+                        String formattedMessage = userId + ": " + inputLine;
+                        Message message = new Message(formattedMessage, userId, null);
                         BeaconServer.broadcast(message, this);
                     }
                 }
@@ -80,10 +89,9 @@ public class BeaconServer {
             }
         }
 
+
         private void authenticate(){
             try {
-                out.println("Enter your username: ");
-                userId = in.readLine();
 
                 if(userId != null && !userId.isEmpty()){
                     authenticated = true;
@@ -104,16 +112,16 @@ public class BeaconServer {
         }
 
         
-        private void disconnect(){
+        private void disconnect() {
             try {
-                if(clientSocket != null) clientSocket.close();
+                if (clientSocket != null) clientSocket.close();
                 clients.remove(this);
-                System.out.println("Client has disconnected");
-            }
-            catch(IOException e){
+                System.out.println("Client has disconnected: " + userId);
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+        
     }
 }
 

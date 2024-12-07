@@ -123,10 +123,14 @@ public class Client_2 {
     private static void handleDisconnect() {
         try {
             if (socket != null && !socket.isClosed()) {
+               
                 out.println("[DISCONNECT] " + userId);
                 socket.close();
             }
+    
+            
             chatArea.append("[You have disconnected]\n");
+    
             
             frame.remove(chatPanel);
             createLoginUI();
@@ -134,6 +138,7 @@ public class Client_2 {
             JOptionPane.showMessageDialog(frame, "Error disconnecting: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+    
 
     private static void handleSendMessage() {
         String message = messageField.getText();
@@ -155,21 +160,34 @@ public class Client_2 {
     private static void receiveMessages() {
         try {
             String incomingMessage;
-            
+    
             while ((incomingMessage = in.readLine()) != null) {
-                String[] parts = incomingMessage.split(": ", 2);
-                if (parts.length == 2) {
-                    String senderName = parts[0];
-                    String encryptedMessage = parts[1];
-
-                    String decryptedMessage = decryptMessage(encryptedMessage, userId);
-
-                    // Update the chat area with the received message
+               
+                if (incomingMessage.contains("has disconnected")) {
+                    
                     SwingUtilities.invokeLater(() -> {
-                        chatArea.append(senderName + ": " + decryptedMessage + "\n");
+                        chatArea.append(incomingMessage + "\n");
                     });
+                } else {
+                    String[] parts = incomingMessage.split(": ", 2);
+                    if (parts.length == 2) {
+                        String senderName = parts[0];
+                        String encryptedMessage = parts[1];
+    
+                        String decryptedMessage = decryptMessage(encryptedMessage, userId);
+    
+                        
+                        SwingUtilities.invokeLater(() -> {
+                            chatArea.append(senderName + ": " + decryptedMessage + "\n");
+                        });
+                    }
                 }
             }
+        } catch (IOException | NoSuchAlgorithmException e) {
+            JOptionPane.showMessageDialog(frame, "Error receiving message: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
         } catch (IOException | NoSuchAlgorithmException e) {
             JOptionPane.showMessageDialog(frame, "Error receiving message: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
