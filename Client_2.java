@@ -20,7 +20,6 @@ public class Client_2 {
     private static JButton loginButton;
     private static JTextField userIdField;
     private static JTextField serverAddressField;
-    private static JTextField serverPortField;
     private static JPanel loginPanel;
     private static JPanel chatPanel;
 
@@ -35,7 +34,7 @@ public class Client_2 {
         frame.setLayout(new BorderLayout());
 
         loginPanel = new JPanel();
-        loginPanel.setLayout(new GridLayout(4, 2));
+        loginPanel.setLayout(new GridLayout(3, 2)); // Adjusted grid layout to remove the port field
 
         loginPanel.add(new JLabel("User ID:"));
         userIdField = new JTextField();
@@ -44,10 +43,6 @@ public class Client_2 {
         loginPanel.add(new JLabel("Server Address:"));
         serverAddressField = new JTextField();
         loginPanel.add(serverAddressField);
-
-        loginPanel.add(new JLabel("Server Port:"));
-        serverPortField = new JTextField();
-        loginPanel.add(serverPortField);
 
         loginButton = new JButton("Login");
         loginButton.addActionListener(e -> handleLogin());
@@ -66,72 +61,65 @@ public class Client_2 {
                 
             }
         }
-        
+
         userId = userIdField.getText();
         String serverAddress = serverAddressField.getText();
-        int serverPort;
-        try {
-            serverPort = Integer.parseInt(serverPortField.getText());
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(frame, "Invalid port number.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-    
-        // Connect to the server
+        int serverPort = 31234; 
+
+       
         try {
             socket = new Socket(serverAddress, serverPort);
             out = new PrintWriter(socket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-    
-            
+
+           
             out.println(userId);
-    
+
             
             frame.remove(loginPanel);
             createChatUI();
-    
-        
+
+            
             new Thread(Client_2::receiveMessages).start();
         } catch (IOException e) {
             JOptionPane.showMessageDialog(frame, "Error connecting to server: " + e.getMessage(), "Connection Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
 
     private static void createChatUI() {
         chatPanel = new JPanel();
         chatPanel.setLayout(new BorderLayout());
-    
-       
+
+        // Chat area
         chatArea = new JTextArea();
         chatArea.setEditable(false);
         chatArea.setLineWrap(true);
         JScrollPane scrollPane = new JScrollPane(chatArea);
         chatPanel.add(scrollPane, BorderLayout.CENTER);
-    
+
         
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JButton disconnectButton = new JButton("Disconnect");
         disconnectButton.addActionListener(e -> handleDisconnect());
         topPanel.add(disconnectButton);
         chatPanel.add(topPanel, BorderLayout.NORTH);
-    
-        
+
+      
         JPanel bottomPanel = new JPanel(new BorderLayout());
         messageField = new JTextField();
         bottomPanel.add(messageField, BorderLayout.CENTER);
-    
+
         sendButton = new JButton("Send");
         sendButton.addActionListener(e -> handleSendMessage());
         bottomPanel.add(sendButton, BorderLayout.EAST);
-    
+
         chatPanel.add(bottomPanel, BorderLayout.SOUTH);
-    
+
         frame.add(chatPanel, BorderLayout.CENTER);
         frame.setSize(400, 500);
         frame.setVisible(true);
     }
-    
+
     private static void handleDisconnect() {
         try {
             if (socket != null && !socket.isClosed()) {
@@ -139,14 +127,14 @@ public class Client_2 {
                 socket.close();
             }
             chatArea.append("[You have disconnected]\n");
-            // Optionally, go back to login UI
+            
             frame.remove(chatPanel);
             createLoginUI();
         } catch (IOException e) {
             JOptionPane.showMessageDialog(frame, "Error disconnecting: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
+
     private static void handleSendMessage() {
         String message = messageField.getText();
         if (!message.isEmpty()) {
@@ -167,6 +155,7 @@ public class Client_2 {
     private static void receiveMessages() {
         try {
             String incomingMessage;
+            
             while ((incomingMessage = in.readLine()) != null) {
                 String[] parts = incomingMessage.split(": ", 2);
                 if (parts.length == 2) {
