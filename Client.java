@@ -117,6 +117,9 @@ public class Client {
         sendButton.addActionListener(e -> handleSendMessage());
         bottomPanel.add(sendButton, BorderLayout.EAST);
 
+        // Add KeyListener to send message on Enter key press
+        messageField.addActionListener(e -> handleSendMessage());
+
         chatPanel.add(bottomPanel, BorderLayout.SOUTH);
 
         frame.add(chatPanel, BorderLayout.CENTER);
