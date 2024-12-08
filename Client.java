@@ -3,6 +3,7 @@ import java.awt.*;
 import java.io.*;
 import java.net.*;
 import java.security.NoSuchAlgorithmException;
+import java.awt.event.ActionListener;
 
 public class Client {
     private static String userId;
@@ -44,21 +45,26 @@ public class Client {
     private static void createLoginUI() {
         loginPanel = new JPanel();
         loginPanel.setLayout(new GridLayout(3, 2));
-
+    
         loginPanel.add(new JLabel("User ID:"));
         userIdField = new JTextField();
         loginPanel.add(userIdField);
-
+    
         loginPanel.add(new JLabel("Server Address:"));
         serverAddressField = new JTextField();
         loginPanel.add(serverAddressField);
-
+    
         loginButton = new JButton("Login");
         loginButton.addActionListener(e -> handleLogin());
         loginPanel.add(loginButton);
-
+    
+        ActionListener loginAction = e -> handleLogin();
+        userIdField.addActionListener(loginAction);        
+        serverAddressField.addActionListener(loginAction); 
+    
         containerPanel.add(loginPanel, "LoginPanel");
     }
+    
 
     private static void createChatUI() {
         chatPanel = new JPanel();
