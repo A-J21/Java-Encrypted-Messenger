@@ -1,4 +1,3 @@
-
 import java.io.*;
 import java.net.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -6,10 +5,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class BeaconServer {
     private static final int PORT = 31234;
     private static CopyOnWriteArrayList<ClientHandler> clients = new CopyOnWriteArrayList<>();
-    
+
     public static void main(String[] args) {
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
-            System.out.println("Server is running and waiting for connections..");
+            System.out.println("Server is running and waiting for connections...");
 
             // Accept incoming connections
             while (true) {
@@ -65,12 +64,13 @@ public class BeaconServer {
                 if (authenticated) {
                     System.out.println("User Accepted: " + userId);
 
+                    // Send the user list to the newly connected client
+                    updateUserList();
+
                     String inputLine;
                     while ((inputLine = in.readLine()) != null) {
-                       
                         if (inputLine.startsWith("[DISCONNECT]")) {
                             System.out.println(userId + " has disconnected");
-                            
                             Message disconnectMessage = new Message(userId + " has disconnected", userId, null);
                             BeaconServer.broadcast(disconnectMessage, this);
                             disconnect();
@@ -89,7 +89,6 @@ public class BeaconServer {
             }
         }
 
-
         private void authenticate() {
             try {
                 userId = in.readLine();
@@ -105,22 +104,34 @@ public class BeaconServer {
                 disconnect();
             }
         }
-        
+
         public void sendMessage(Message message) {
             out.println(message.getContent());
         }
 
-        
+        private static void updateUserList() {
+            StringBuilder userListString = new StringBuilder("[USERLIST]: ");
+            for (ClientHandler client : clients) {
+                userListString.append(client.userId).append(", ");
+            }
+            
+            if (userListString.length() > 12) {
+                userListString.setLength(userListString.length() - 2);
+            }
+            for (ClientHandler client : clients) {
+                client.sendMessage(new Message(userListString.toString(), "Server", null));
+            }
+        }
+
         private void disconnect() {
             try {
                 if (clientSocket != null) clientSocket.close();
                 clients.remove(this);
                 System.out.println("Client has disconnected: " + userId);
+                updateUserList();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        
     }
 }
-
