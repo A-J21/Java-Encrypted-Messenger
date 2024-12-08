@@ -47,6 +47,11 @@ public class Client {
         loginButton.addActionListener(e -> handleLogin());
         loginPanel.add(loginButton);
 
+        // Add KeyListener for Enter key on the userIdField and serverAddressField
+        ActionListener enterListener = e -> handleLogin(); // ActionListener handles Enter key
+        userIdField.addActionListener(enterListener);
+        serverAddressField.addActionListener(enterListener);
+
         frame.add(loginPanel, BorderLayout.CENTER);
         frame.setVisible(true);
     }
