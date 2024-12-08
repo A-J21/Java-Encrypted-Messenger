@@ -1,3 +1,20 @@
+/**
+ * The Client class represents a client-side application that allows users to connect to a server,
+ * send and receive messages, and view a list of users currently online. The user will supply their 
+ * User ID (username) and the server's address (IP or domain) to establish a connection. Once connected, 
+ * the client can send messages to other users and view incoming messages in a chat interface.
+ * 
+ * This class utilizes Swing for the graphical user interface (GUI) and handles networking through 
+ * sockets. The user can disconnect from the server at any time, which will close the connection and 
+ * revert to the login screen.
+ * 
+ * The client also displays an updated list of users who are currently online, which is dynamically 
+ * updated when users connect or disconnect.
+ * 
+ * <p>
+ * Authors: Ali Jalil, Josh Egwaikhide, Nick Chalardsoontornvatee
+ * </p>
+ */
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
@@ -8,28 +25,36 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class Client {
-    private static String userId;
-    private static Socket socket;
-    private static PrintWriter out;
-    private static BufferedReader in;
-    private static JFrame frame;
-    private static JTextArea chatArea;
-    private static JTextField messageField;
-    private static JButton sendButton;
-    private static JButton loginButton;
-    private static JTextField userIdField;
-    private static JTextField serverAddressField;
-    private static JPanel loginPanel;
-    private static JPanel chatPanel;
-    private static CardLayout cardLayout;
-    private static JPanel containerPanel;
-    private static JList<String> userList;
-    private static DefaultListModel<String> userListModel;
+    private static String userId;  // User's unique identifier (username)
+    private static Socket socket;  // Socket for client-server communication
+    private static PrintWriter out;  // Output stream for sending messages to the server
+    private static BufferedReader in;  // Input stream for receiving messages from the server
+    private static JFrame frame;  // Main JFrame for the client GUI
+    private static JTextArea chatArea;  // Text area displaying the chat messages
+    private static JTextField messageField;  // Text field for entering messages
+    private static JButton sendButton;  // Button to send messages
+    private static JButton loginButton;  // Button to log in
+    private static JTextField userIdField;  // Text field for entering the user ID
+    private static JTextField serverAddressField;  // Text field for entering the server address
+    private static JPanel loginPanel;  // Panel for the login UI
+    private static JPanel chatPanel;  // Panel for the chat UI
+    private static CardLayout cardLayout;  // Layout manager to switch between panels
+    private static JPanel containerPanel;  // Panel that holds both login and chat panels
+    private static JList<String> userList;  // JList to display the list of online users
+    private static DefaultListModel<String> userListModel;  // Model to hold the user list data
 
+    /**
+     * Main entry point of the client application. It initializes the GUI and sets up the login panel.
+     * This method is called when the application is launched.
+     */
     public static void main(String[] args) {
         SwingUtilities.invokeLater(Client::initializeUI);
     }
 
+    /**
+     * Initializes the user interface for the client. It creates the main frame and the panels for login and chat.
+     * The login panel is shown first, and the chat panel is only shown after a successful login.
+     */
     private static void initializeUI() {
         frame = new JFrame("Client Application");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -46,6 +71,10 @@ public class Client {
         frame.setVisible(true);
     }
 
+    /**
+     * Creates the login user interface, where the user enters their user ID and server address.
+     * The user can click the login button or press Enter to initiate the login process.
+     */
     private static void createLoginUI() {
         loginPanel = new JPanel();
         loginPanel.setLayout(new GridLayout(3, 2));
@@ -69,6 +98,10 @@ public class Client {
         containerPanel.add(loginPanel, "LoginPanel");
     }
 
+    /**
+     * Creates the chat user interface, where the user can send and receive messages, 
+     * and view the list of online users.
+     */
     private static void createChatUI() {
         chatPanel = new JPanel();
         chatPanel.setLayout(new BorderLayout());
@@ -113,6 +146,10 @@ public class Client {
         containerPanel.add(chatPanel, "ChatPanel");
     }
 
+    /**
+     * Handles the login process by connecting to the specified server and switching to the chat interface.
+     * It also starts a new thread to receive messages from the server.
+     */
     private static void handleLogin() {
         userId = userIdField.getText();
         String serverAddress = serverAddressField.getText();
@@ -134,6 +171,9 @@ public class Client {
         }
     }
 
+    /**
+     * Handles the disconnection process by closing the socket and reverting to the login interface.
+     */
     private static void handleDisconnect() {
         try {
             if (socket != null && !socket.isClosed()) {
@@ -148,6 +188,9 @@ public class Client {
         }
     }
 
+    /**
+     * Sends the message entered by the user to the server. The message is encrypted before sending.
+     */
     private static void handleSendMessage() {
         String message = messageField.getText();
         if (!message.isEmpty()) {
@@ -163,6 +206,9 @@ public class Client {
         }
     }
 
+    /**
+     * Receives messages from the server. This method listens for incoming messages and updates the chat area accordingly.
+     */
     private static void receiveMessages() {
         try {
             String incomingMessage;
@@ -198,7 +244,11 @@ public class Client {
         }
     }
 
-    //update the user list 
+    /**
+     * Updates the list of online users in the user list UI component.
+     * 
+     * @param message The message containing the updated user list, formatted as "[USERLIST]: user1, user2, ...".
+     */
     private static void updateUserList(String message) {
         // Extract user list from the message
         String[] users = message.split(": ")[1].split(", ");
